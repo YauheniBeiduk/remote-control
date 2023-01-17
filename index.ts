@@ -1,4 +1,5 @@
 import { httpServer } from './src/http_server';
+import * as dotenv from 'dotenv';
 import { WebSocketServer, createWebSocketStream } from 'ws';
 import {
   drawCircle,
@@ -12,13 +13,15 @@ import {
   moveUp,
   printScreen,
 } from './src/commands';
-
-const HTTP_PORT = 8181;
+dotenv.config();
+const port = Number(process.env.PORT);
+const HTTP_PORT = process.env.HTTP_PORT;
 
 console.log(`Start static http server on the ${HTTP_PORT} port!`);
+
 httpServer.listen(HTTP_PORT);
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({ port });
 
 wss.on('connection', async (ws) => {
   const duplex = createWebSocketStream(ws, {
@@ -29,8 +32,7 @@ wss.on('connection', async (ws) => {
     console.log(`Received message => ${data}`);
     try {
       const { x, y } = await getPosition();
-      // eslint-disable-next-line no-unsafe-optional-chaining
-      const [command, ...args] = data.toString()?.split(' ');
+      const [command, ...args] = data.toString().split(' ');
       const pixels = Number(args[0]);
       const length = Number(args[1]);
 
@@ -53,6 +55,7 @@ wss.on('connection', async (ws) => {
           break;
         case 'draw_rectangle':
           await drawRectangle(x, y, pixels, length);
+          ws.send(`draw_rectangle`)
           break;
         case 'draw_square':
           await drawSquare(x, y, pixels);
@@ -81,5 +84,6 @@ wss.on('connection', async (ws) => {
 process.on('SIGINT', () => {
   process.stdout.write('Closing websocket...\n');
   wss.close();
+  console.log('WS Server is closed.');
   process.exit(0);
 });

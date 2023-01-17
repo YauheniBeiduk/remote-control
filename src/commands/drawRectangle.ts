@@ -6,21 +6,11 @@ export const drawRectangle = async (
   width: number,
   length: number
 ): Promise<void> => {
+  mouse.config.mouseSpeed = 500;
   await mouse.pressButton(Button.LEFT);
   await mouse.move(right(width));
-
-  await mouse.releaseButton(Button.LEFT);
-  await mouse.pressButton(Button.LEFT);
-
   await mouse.move(down(length));
-
-  await mouse.releaseButton(Button.LEFT);
-  await mouse.pressButton(Button.LEFT);
   await mouse.move(left(width));
-
-  await mouse.releaseButton(Button.LEFT);
-  await mouse.pressButton(Button.LEFT);
   await mouse.move(up(length));
-
   await mouse.releaseButton(Button.LEFT);
 };

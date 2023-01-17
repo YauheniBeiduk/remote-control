@@ -1,23 +1,25 @@
 import { Duplex } from 'stream';
-import { mouse, Region, screen } from '@nut-tree/nut-js';
+import { Region, screen } from '@nut-tree/nut-js';
 import Jimp from 'jimp';
+import { getPosition } from './moveCommands';
 
 export const printScreen = async (duplex: Duplex) => {
-  const { x: currentX, y: currentY } = await mouse.getPosition();
-
-  const screenshotHalfWidth = 100;
+  const { x, y } = await getPosition();
 
   const screenShoot = await screen.grabRegion(
     new Region(
-      Math.max(0, currentX - screenshotHalfWidth),
-      Math.max(0, currentY - screenshotHalfWidth),
+      Math.max(0, x - 100),
+      Math.max(0, y - 100),
       100,
       100
     )
   );
-  const screenShootNew = await screenShoot.data;
-  const jimp = new Jimp({ data: screenShootNew, screenShootNew, height: 200 });
-  const base64Img = await jimp.getBase64Async(Jimp.MIME_PNG);
-  const base64 = base64Img.split(',')[1];
+
+  const jimp = new Jimp(200,200);
+  jimp.bitmap.data = screenShoot.data;
+
+  const img = await jimp.getBufferAsync(Jimp.MIME_PNG);
+  const base64 = img.toString("base64");
+
   duplex.write(`prnt_scrn ${base64}`);
 };
