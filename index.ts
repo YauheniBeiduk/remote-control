@@ -13,6 +13,7 @@ import {
   moveUp,
   printScreen,
 } from './src/commands';
+
 dotenv.config();
 const port = Number(process.env.PORT);
 const HTTP_PORT = process.env.HTTP_PORT;
@@ -29,7 +30,7 @@ wss.on('connection', async (ws) => {
     decodeStrings: false,
   });
   duplex.on('data', async (data: string) => {
-    console.log(`Received message => ${data}`);
+    console.log(`Last command: ${data}`);
     try {
       const { x, y } = await getPosition();
       const [command, ...args] = data.toString().split(' ');
@@ -38,29 +39,35 @@ wss.on('connection', async (ws) => {
 
       switch (command) {
         case 'mouse_up':
-          await moveUp(pixels);
           ws.send(`${command}`);
+          await moveUp(pixels);
           break;
         case 'mouse_down':
+          ws.send(`${command}`);
           await moveDown(pixels);
           break;
         case 'mouse_left':
+          ws.send(`${command}`);
           await moveLeft(pixels);
           break;
         case 'mouse_right':
+          ws.send(`${command}`);
           await moveRight(pixels);
           break;
         case 'draw_circle':
+          ws.send(`${command}`);
           await drawCircle(x, y, pixels);
           break;
         case 'draw_rectangle':
+          ws.send(`${command}`);
           await drawRectangle(x, y, pixels, length);
-          ws.send(`draw_rectangle`)
           break;
         case 'draw_square':
+          ws.send(`${command}`);
           await drawSquare(x, y, pixels);
           break;
         case 'prnt_scrn':
+          ws.send(`${command}`);
           await printScreen(duplex);
           break;
         case 'mouse_position':
@@ -80,10 +87,11 @@ wss.on('connection', async (ws) => {
     wss.close();
   });
 });
-
 process.on('SIGINT', () => {
-  process.stdout.write('Closing websocket...\n');
-  wss.close();
-  console.log('WS Server is closed.');
-  process.exit(0);
+  process.stdout.write('Closing websocket...');
+  process.exit();
 });
+process.on("exit", () => {
+  console.log(`Thank you, goodbye!`);
+});
+

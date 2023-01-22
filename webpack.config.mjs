@@ -1,5 +1,6 @@
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import nodeExternals from 'webpack-node-externals';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,6 +22,7 @@ export default {
     resolve: {
         extensions: [".ts", ".js"],
     },
+    externals: [nodeExternals()],
     output: {
         filename: "main.js",
         path: resolve(__dirname, "dist"),

@@ -3,6 +3,7 @@
 
 # System Files
 .DS_Store
+dist
 Thumbs.db
 [Dd]esktop.ini
 
