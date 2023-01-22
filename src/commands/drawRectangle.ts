@@ -1,8 +1,6 @@
 import { Button, down, left, mouse, right, up } from '@nut-tree/nut-js';
 
 export const drawRectangle = async (
-  x: number,
-  y: number,
   width: number,
   length: number
 ): Promise<void> => {

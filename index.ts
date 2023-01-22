@@ -60,11 +60,11 @@ wss.on('connection', async (ws) => {
           break;
         case 'draw_rectangle':
           ws.send(`${command}`);
-          await drawRectangle(x, y, pixels, length);
+          await drawRectangle(pixels, length);
           break;
         case 'draw_square':
           ws.send(`${command}`);
-          await drawSquare(x, y, pixels);
+          await drawSquare(pixels);
           break;
         case 'prnt_scrn':
           ws.send(`${command}`);
